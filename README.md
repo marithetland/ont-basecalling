@@ -1,6 +1,6 @@
 # ont-basecalling
 
-** Basecalling of ONT reads**
+## Basecalling of ONT reads
 
 This is a script to perform ONT-basecalling on SUS-AMR's Linux computers. It takes as input the FAST5 files from an ONT run (in directories or subdirectories) and outputs the raw fastq and fastq that have been subsampled (with filtlong).
 
