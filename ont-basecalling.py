@@ -56,6 +56,7 @@ def parse_args():
     input_args = parser.add_argument_group('Input options (required)')
     output_args = parser.add_argument_group('Output options (required)')
     optional_args = parser.add_argument_group('Optional flags')
+    advanced_args = parser.add_argument_group('Advanced options')
 
     #Input
     input_args.add_argument('-i', '--input_dir', type=pathlib.Path, required=True, help='Input directory, which will be recursively searched for fast5-files.')
@@ -72,10 +73,9 @@ def parse_args():
     optional_args.add_argument('--resume', action='store_true', required=False, help='Use this flag if your first run was interrupted and you want to resume. Default: off.')
     optional_args.add_argument('--cpu', action='store_true', required=False, help='If GPU is busy, use CPU with this flag. Will use 4 threads and 6 callers. Default: GPU.')
 
-    #optional_args.add_argument('-h', '--help', action='help', help='Show this help message and exit')
-    #optional_args.add_argument('-s', '--illumina_reads', type=pathlib.Path, required=True, help='Complete path to Illumina.')
-    #optional_args.add_argument(--illumina_reads', nargs='+', type=str, required=Flase, help='Full path to Illumina PE reads if unicycler assembly wanted. Must be sorted by barcode if barcoded reads')
-
+    #Advanced options
+    advanced_args.add_argument('--chunks_per_runner', type=str, required=False, help='Advanced option. Change chunks per runner. Default = 300')
+    
     return parser.parse_args()
 
 
@@ -151,6 +151,11 @@ def get_guppy_command(input_dir, save_dir, barcode_kits, basecalling_model, resu
     else:
         guppy_command += ['--device ', 'cuda:all:100%'] #change to auto / add option to use CPU or GPU with options
 
+    if chunks:
+        guppy_command += ['--chunks_per_runner ', chunks] #change to auto / add option to use CPU or GPU with options
+    else:
+        guppy_command += ['--chunks_per_runner ', '300'] #change to auto / add option to use CPU or GPU
+
     if resume:
          guppy_command += ['--resume']  #add option to resume
     
@@ -205,7 +210,7 @@ def main():
 
     ##Part 1: Run Guppy    
     #Get Guppy command, run guppy  (create def basecall_reads():)
-    guppy_command=(get_guppy_command(raw_fast5s, basecalled_fastq,barcode_kit, basecaller_mode, args.resume, args.cpu))
+    guppy_command=(get_guppy_command(raw_fast5s, basecalled_fastq,barcode_kit, basecaller_mode, args.resume, args.cpu, args.chunks_per_runner))
     run_command([listToString(guppy_command)], shell=True)
     
     logging.info("Guppy is done, now the fastq-files for each genome are being concatenated - bear with me")
