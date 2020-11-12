@@ -4,13 +4,13 @@
 
 This is a script to perform ONT-basecalling on SUS-AMR's Linux computers. It takes as input the FAST5 files from an ONT run (in directories or subdirectories) and outputs the raw fastq and fastq that have been subsampled (with filtlong).
 
-Please note: This script is based on the basecall.pyscript from https://github.com/rrwick/MinION-desktop and adapted for the use at the SUS AMR lab.
+Please note: This script is based on Ryan Wick's script basecall.py from https://github.com/rrwick/MinION-desktop and adapted for the use at the SUS AMR lab.
 
 
 ## Table of Contents
 
 [Requirements](#Requirements)  
-[Basic Usage](#Basic-usage)  
+[Example Usage](#Basic-usage)  
 [Usage](#Usage)  
 
 
