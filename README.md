@@ -12,9 +12,6 @@ Please note: This script is based on the basecall.pyscript from https://github.c
 [Requirements](#Requirements)  
 [Basic Usage](#Basic-usage)  
 [Usage](#Usage)  
-[Output](#Output)  
-[Detailed Explanation](#Detailed-explanation)  
-[Updates](#Updates)  
 
 
 ## Requirements
