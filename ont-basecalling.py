@@ -246,4 +246,5 @@ if __name__ == '__main__':
 #EOF
 
 #TODO: Add option to specify path to filtlong, fastq_count and guppy-basecaller
+#TODO: Make in proper python code...
 
