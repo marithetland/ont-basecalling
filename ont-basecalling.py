@@ -61,7 +61,7 @@ def parse_args():
 
     #Input
     input_args.add_argument('-i', '--input_dir', type=pathlib.Path, required=True, help='Input directory, which will be recursively searched for fast5-files.')
-    input_args.add_argument('-b', '--basecalling_model', type=str, required=True, choices=["r9.4_fast","r9.4_hac","r10_fast","r10_hac"], help='Indicate which basecalling mode to use. In most cases you probably want to use a HAC option.')
+    input_args.add_argument('-b', '--basecalling_model', type=str, required=True, choices=["r9.4_fast","r9.4_hac","r9.5","r10_fast","r10_hac"], help='Indicate which basecalling mode to use. In most cases you probably want to use a HAC option.')
     input_args.add_argument('-k', '--barcode_kit', type=str, required=True, choices=["none","native_1-12","native_13-24","native_1-24","rapid_1-12"], help='Indicate which barcode-kits were used, if any.')
 
     #Output - currently writes to same dir as input
@@ -248,4 +248,3 @@ if __name__ == '__main__':
 
 #TODO: Add option to specify path to filtlong, fastq_count and guppy-basecaller
 #TODO: Make in proper python code...
-
