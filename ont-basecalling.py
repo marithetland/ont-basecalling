@@ -34,6 +34,7 @@ from subprocess import check_output, CalledProcessError, STDOUT
 BASECALLING = collections.OrderedDict([
     ('r9.4_fast', ['--config dna_r9.4.1_450bps_fast.cfg ']),
     ('r9.4_hac',  ['--config dna_r9.4.1_450bps_hac.cfg ']),
+    ('r9.5',  ['--config dna_r9.5_450bps.cfg ']),
     ('r10_fast',  ['--config dna_r10_450bps_fast.cfg ']),
     ('r10_hac',   ['--config dna_r10_450bps_hac.cfg ']),
 ])
