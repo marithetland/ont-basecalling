@@ -30,7 +30,7 @@ python ont-basecalling.py -i . -b r9.4_hac -k native_1-24
 
 ```
 usage: ont-basecalling.py [-h] [-v] -i INPUT_DIR -b
-                                             {r9.4_fast,r9.4_hac,r10_fast,r10_hac}
+                                             {r9.4_fast,r9.4_hac,r9.5,r10_fast,r10_hac}
                                              -k
                                              {none,native_1-12,native_13-24,native_1-24,rapid_1-12}
                                              [-o OUTDIR] [-f {on,off}] [-a]
