@@ -37,14 +37,15 @@ BASECALLING = collections.OrderedDict([
     ('r9.5',  ['--config dna_r9.5_450bps.cfg ']),
     ('r10_fast',  ['--config dna_r10_450bps_fast.cfg ']),
     ('r10_hac',   ['--config dna_r10_450bps_hac.cfg ']),
+    ('r10.4_sup',   ['--config dna_r10.4_e8.1_sup.cfg ']),
 ])
 
 BARCODING = collections.OrderedDict([
-    ('native_1-12',  ['--barcode_kits "EXP-NBD104" --trim_barcodes ']),
-    ('native_13-24', ['--barcode_kits "EXP-NBD114" --trim_barcodes ']),
-    ('native_1-24',  ['--barcode_kits "EXP-NBD104 EXP-NBD114" --trim_barcodes ']),
-    ('rapid_1-12',   ['--barcode_kits "SQK-RBK004" --trim_barcodes ']),
-    ('none',         [])
+    ('native_1-12',  ['--barcode_kits "EXP-NBD104" ']),
+    ('native_13-24', ['--barcode_kits "EXP-NBD114" ']),
+    ('native_1-24',  ['--barcode_kits "EXP-NBD104 EXP-NBD114" ']),
+    ('rapid_1-12',   ['--barcode_kits "SQK-RBK004" ']),
+    ('none',         ['--disable_trim_barcodes'])
 ])
 
 #Defs
@@ -61,7 +62,7 @@ def parse_args():
 
     #Input
     input_args.add_argument('-i', '--input_dir', type=pathlib.Path, required=True, help='Input directory, which will be recursively searched for fast5-files.')
-    input_args.add_argument('-b', '--basecalling_model', type=str, required=True, choices=["r9.4_fast","r9.4_hac","r9.5","r10_fast","r10_hac"], help='Indicate which basecalling mode to use. In most cases you probably want to use a HAC option.')
+    input_args.add_argument('-b', '--basecalling_model', type=str, required=True, choices=["r9.4_fast","r9.4_hac","r9.5","r10_fast","r10_hac","r10.4_sup"], help='Indicate which basecalling mode to use. In most cases you probably want to use a HAC option.')
     input_args.add_argument('-k', '--barcode_kit', type=str, required=True, choices=["none","native_1-12","native_13-24","native_1-24","rapid_1-12"], help='Indicate which barcode-kits were used, if any.')
 
     #Output - currently writes to same dir as input
