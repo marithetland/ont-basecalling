@@ -228,10 +228,13 @@ def main():
     ##Part 3: Run Filtlong
     if args.filtlong:
         logging.info("Less is more, so subsampling the reads now with FiltLong")
+        #TODO: Make option to choose which filtlong settings to use
         if barcode_kit == 'none':
-            run_command(['mkdir ',subsampled_fastq,' ; filtlong --min_length 1000 --keep_percent 90 --target_bases 500000000 ',cat_fastq,'reads.fastq.gz| gzip > ',subsampled_fastq,'reads_subsampled.fastq.gz'], shell=True)
+            #run_command(['mkdir ',subsampled_fastq,' ; filtlong --min_length 1000 --keep_percent 90 --target_bases 500000000 ',cat_fastq,'reads.fastq.gz| gzip > ',subsampled_fastq,'reads_subsampled.fastq.gz'], shell=True)
+            run_command(['mkdir ',subsampled_fastq,' ; filtlong --min_length 1000 --keep_percent 95  ',cat_fastq,'reads.fastq.gz| gzip > ',subsampled_fastq,'reads_subsampled.fastq.gz'], shell=True)
         else:
-            run_command(['mkdir ',subsampled_fastq,' ; for f in $(ls ',cat_fastq,'*.fastq.gz | cut -d"." -f1) ; do base=$(basename ${f}) ;  filtlong --min_length 1000 --keep_percent 90 --target_bases 500000000 ${f}.fastq.gz| gzip > ',subsampled_fastq,'${base}_subsampled.fastq.gz ; done'], shell=True)
+            #run_command(['mkdir ',subsampled_fastq,' ; for f in $(ls ',cat_fastq,'*.fastq.gz | cut -d"." -f1) ; do base=$(basename ${f}) ;  filtlong --min_length 1000 --keep_percent 90 --target_bases 500000000 ${f}.fastq.gz| gzip > ',subsampled_fastq,'${base}_subsampled.fastq.gz ; done'], shell=True)
+            run_command(['mkdir ',subsampled_fastq,' ; for f in $(ls ',cat_fastq,'*.fastq.gz | cut -d"." -f1) ; do base=$(basename ${f}) ;  filtlong --min_length 1000 --keep_percent 95 ${f}.fastq.gz| gzip > ',subsampled_fastq,'${base}_subsampled.fastq.gz ; done'], shell=True)
         logging.info("The FASTQ files are now ready for further analysis :) You'll find them in: " + subsampled_fastq)
     else:
         logging.info("The FASTQ files are now ready for further analysis :) You'll find them in: " + cat_fastq)
