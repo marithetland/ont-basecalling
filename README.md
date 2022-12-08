@@ -67,3 +67,6 @@ Optional flags:
                         threads and 6 callers. Default: GPU.
 ```
 
+
+## ToDo-list
+* Add option to provide barcode-filename key to rename files in script
