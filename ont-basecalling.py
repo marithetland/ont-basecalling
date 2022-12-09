@@ -144,7 +144,7 @@ def check_arguments(args):
     return directory
 
 
-def get_guppy_command(input_dir, save_dir, barcode_kits, basecalling_model, resume, cpu, chunks_per_runner):
+def get_guppy_command(input_dir, save_dir, barcode_kits, basecalling_model, resume, cpu, chunks):
     guppy_command = ['guppy_basecaller',
                      '--input_path ', input_dir, 
                      '--recursive ',
