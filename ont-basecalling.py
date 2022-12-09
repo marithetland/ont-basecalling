@@ -193,7 +193,7 @@ def main():
     check_python_version()
     check_guppy_version()
     check_arguments(args)
-    if args.filtlong:
+    if args.filtlong == 'no':
         check_filtlong_version()
 
     outdir=os.path.abspath(str(args.outdir))
@@ -230,7 +230,7 @@ def main():
 
 
     ##Part 3: Run Filtlong
-    if args.filtlong:
+    if not args.filtlong = 'no' :
         logging.info("Less is more, so subsampling the reads now with FiltLong")
         #TODO: Make option to choose which filtlong settings to use
         if barcode_kit == 'none':
