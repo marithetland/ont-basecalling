@@ -70,3 +70,4 @@ Optional flags:
 
 ## ToDo-list
 * Add option to provide barcode-filename key to rename files in script
+* Add option to specify paths to guppy_basecaller and filtlong
