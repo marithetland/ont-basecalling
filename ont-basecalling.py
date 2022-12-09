@@ -230,7 +230,7 @@ def main():
 
 
     ##Part 3: Run Filtlong
-    if not args.filtlong = 'no' :
+    if not args.filtlong == 'no' :
         logging.info("Less is more, so subsampling the reads now with FiltLong")
         #TODO: Make option to choose which filtlong settings to use
         if barcode_kit == 'none':
