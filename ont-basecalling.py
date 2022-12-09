@@ -192,8 +192,9 @@ def main():
     args = parse_args()
     check_python_version()
     check_guppy_version()
-    check_filtlong_version()
     check_arguments(args)
+    if args.filtlong:
+        check_filtlong_version()
 
     outdir=os.path.abspath(str(args.outdir))
     if outdir[-1] != '/':
