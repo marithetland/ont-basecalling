@@ -14,6 +14,7 @@ import glob
 import datetime
 import itertools
 import os, sys, re
+
 import shutil
 import csv
 import pandas as pd
@@ -143,7 +144,7 @@ def check_arguments(args):
     return directory
 
 
-def get_guppy_command(input_dir, save_dir, barcode_kits, basecalling_model, resume, cpu):
+def get_guppy_command(input_dir, save_dir, barcode_kits, basecalling_model, resume, cpu, chunks_per_runner):
     guppy_command = ['guppy_basecaller',
                      '--input_path ', input_dir, 
                      '--recursive ',
