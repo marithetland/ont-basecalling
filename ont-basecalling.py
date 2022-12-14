@@ -22,6 +22,7 @@ from argparse import ArgumentParser
 import subprocess
 from Bio import SeqIO
 import pathlib
+from pathlib import Path
 import collections
 import dateutil.parser
 import h5py
@@ -60,7 +61,7 @@ def parse_args():
 
     #Argsgroups
     input_args = parser.add_argument_group('Input options (required)')
-    output_args = parser.add_argument_group('Output options (required)')
+    output_args = parser.add_argument_group('Output options')
     optional_args = parser.add_argument_group('Optional flags')
     advanced_args = parser.add_argument_group('Advanced options')
 
@@ -70,18 +71,18 @@ def parse_args():
     input_args.add_argument('-k', '--barcode_kit', type=str, required=True, choices=["none","native_1-12","native_13-24","native_1-24", "native_1-24_new", "native_1-96", "rapid_1-12"], help='Indicate which barcode-kits were used, if any.')
 
     #Output - currently writes to same dir as input
-    output_args.add_argument('-o', '--outdir', type=pathlib.Path, required=False, default='.', help='Output directory for all output files.')
-
+    output_args.add_argument('-o', '--outdir', type=pathlib.Path, required=False, default='.', help='Output directory for all output files. Default is current working directory.')
 
     #Options
-    optional_args.add_argument('-f', '--filtlong', type=str, choices=["on","off"], required=False, default="on", help='Subsample fastq-files with Filtlong? Default: on.')
-    optional_args.add_argument('-a', '--assemble', action='store_true', required=False, help='Assemble the fastq-files from ONT only with unicycler. Default: off.')
+    optional_args.add_argument('--key_file',type=Path, required=False, help='Provide a csv file with barcode,sample_name (one per line) to rename the files.')
+    optional_args.add_argument('--filtlong', type=str, choices=["on","off"], required=False, default="on", help='Subsample fastq-files with Filtlong. Default: on.')
+    optional_args.add_argument('--fast_count', type=str, choices=["on","off"], required=False, default="on", help='QC of the raw ONT fastq files (003_fastq). Default: on.')
     optional_args.add_argument('--resume', action='store_true', required=False, help='Use this flag if your first run was interrupted and you want to resume. Default: off.')
     optional_args.add_argument('--cpu', action='store_true', required=False, help='If GPU is busy, use CPU with this flag. Will use 4 threads and 6 callers. Default: GPU.')
 
     #Advanced options
     advanced_args.add_argument('--chunks_per_runner', type=str, required=False, help='Advanced option. Change chunks per runner. Default = 300')
-    
+
     return parser.parse_args()
 
 
@@ -168,6 +169,49 @@ def get_guppy_command(input_dir, save_dir, barcode_kits, basecalling_model, resu
     print(guppy_command)
     return guppy_command
 
+def read_key_file(args):
+    """Read input file and check"""
+    logging.info("Reading barcode sample key file as input file.")
+
+    key_file=os.path.abspath(args.key_file)
+
+    if not os.path.isfile(key_file):
+        sys.exit("Could not locate the input file.")
+    try:
+        key_file_df = pd.DataFrame(pd.read_csv(key_file, sep=",|;", names=["Barcode", "Name"], engine='python'))
+    except:
+        logging.exception("Unable to read input file.")
+        sys.exit("Could not read input file. Please check that the formatting is correct, eg: barcode01,sample1")
+
+    return key_file, key_file_df
+
+def rename_samples(fastq_folder, key_file):
+    """Rename samples according to barcode_sample_key.csv file provided in input directory"""
+    logging.info("Renaming fastq files.")
+
+    try:
+        #Rename sequences according to barcode_sample_key.csv
+        run_command(['cat ',key_file,' | sed "s|^|rename \'s/|g" | sed \'s/,/\//\' | sed "s|$|/g\' *_long.fastq.gz|g" >> ',fastq_folder,'rename_samples.sh ; cd ',fastq_folder,' ; bash rename_samples.sh'], shell=True)
+
+        #If any files were not renamed, move these to a new directory called: unused_barcodes
+        unused_sequence = glob.glob(fastq_folder + "barcode[0-9][0-9]_long.fastq.gz")
+        unclassified_sequence = glob.glob(fastq_folder + "unclassified_long.fastq.gz")
+        if unused_sequence:
+            print("Found barcodes which were not renamed, moving these to folder: 003_fastq/unused_barcodes/")
+            unused_sequence_list = []
+            for i in unused_sequence:
+                name = os.path.basename(i)
+                unused_sequence_list.append(name)
+            run_command(['mkdir ',fastq_folder + 'unused_barcodes'], shell=True) #ToDO: add check if already exists
+            for i in unused_sequence_list:
+                run_command(['mv ',fastq_folder + i,' ',fastq_folder + 'unused_barcodes/'], shell=True)
+        if unused_sequence:
+            run_command(['mv ',fastq_folder + 'unclassified_long.fastq.gz',' ',fastq_folder + 'unused_barcodes/'], shell=True)
+
+    except:
+        logging.exception("Error in renaming long-reads.")
+        sys.exit("Error in def rename_samples. Please check that the input file is correctly formatted, eg. no empty new lines and the delimiter is set to comma.")
+
 def listToString(s):  
     # initialize an empty string 
     str1 = " " 
@@ -202,9 +246,9 @@ def main():
         print(outdir)
 
 
-    raw_fast5s=os.path.abspath(str(args.input_dir))
+    raw_fast5s=os.path.abspath(str(args.input_dir)) #reccomend using 001_rawData, add option for this
     basecalled_fastq=(outdir+'002_basecalled/')
-    cat_fastq=(outdir+'003_fastq/')
+    fastq_folder=(outdir+'003_fastq/')
     subsampled_fastq=(outdir+'004_filtered/')
     barcode_kit=args.barcode_kit
     print("Specified barcode kit is: " + barcode_kit)
@@ -218,34 +262,42 @@ def main():
     #Get Guppy command, run guppy  (create def basecall_reads():)
     guppy_command=(get_guppy_command(raw_fast5s, basecalled_fastq,barcode_kit, basecaller_mode, args.resume, args.cpu, args.chunks_per_runner))
     run_command([listToString(guppy_command)], shell=True)
-    
+
     logging.info("Guppy is done, now the fastq-files for each genome are being concatenated - bear with me")
 
     ##Part 2: Merge FASTQs for each genome
     if barcode_kit == 'none':
-        run_command(['mkdir ',cat_fastq,' ; cat ',basecalled_fastq,'*fastq.gz >> ',cat_fastq,'reads.fastq.gz'], shell=True)
+        run_command(['mkdir ',fastq_folder,' ; cat ',basecalled_fastq,'*fastq.gz >> ',fastq_folder,'reads_long.fastq.gz'], shell=True)
     else:
-        run_command(['mkdir ',cat_fastq,' ; for dir in $(ls -d ',basecalled_fastq,'pass/barcode[0-9][0-9] ',basecalled_fastq,'unclassified) ; do cd ${dir} ; base=$(basename $dir) ; cat *gz >> ',cat_fastq,'${base}_long.fastq.gz ; cd .. ; done' ], shell=True)
+        run_command(['mkdir ',fastq_folder,' ; for dir in $(ls -d ',basecalled_fastq,'pass/barcode[0-9][0-9] ',basecalled_fastq,'pass/unclassified) ; do cd ${dir} ; base=$(basename $dir) ; cat *gz >> ',fastq_folder,'${base}_long.fastq.gz ; cd .. ; done' ], shell=True)
 
+    ##Part 3: Rename samples if a key_file csv file has been supplied
+    #Format: one entry per line with 'barcode,sample_name', e.g. barcode01,sample_1 
+    if not barcode_kit == 'none' and args.key_file:
+        key_file, key_file_df = read_key_file(args)
+        rename_samples(fastq_folder, key_file)
 
-    ##Part 3: Run Filtlong
-    if not args.filtlong == 'no' :
+    ##Part 4: Run Filtlong if flag is turned on
+    if not args.filtlong == 'off' :
         logging.info("Less is more, so subsampling the reads now with FiltLong")
         #TODO: Make option to choose which filtlong settings to use
         if barcode_kit == 'none':
-            #run_command(['mkdir ',subsampled_fastq,' ; filtlong --min_length 1000 --keep_percent 90 --target_bases 500000000 ',cat_fastq,'reads.fastq.gz| gzip > ',subsampled_fastq,'reads_subsampled.fastq.gz'], shell=True)
-            #run_command(['mkdir ',subsampled_fastq,' ; for f in $(ls ',cat_fastq,'*.fastq.gz | cut -d"." -f1) ; do base=$(basename ${f}) ;  filtlong --min_length 1000 --keep_percent 90 --target_bases 500000000 ${f}.fastq.gz| gzip > ',subsampled_fastq,'${base}_subsampled.fastq.gz ; done'], shell=True)
-            run_command(['mkdir ',subsampled_fastq,' ; for f in $(ls ',cat_fastq,'*.fastq.gz | cut -d"." -f1) ; do base=$(basename ${f}) ;  filtlong --min_length 1000 --keep_percent 95 ${f}.fastq.gz| gzip > ',subsampled_fastq,'${base}_subsampled.fastq.gz ; done'], shell=True)
-        logging.info("The FASTQ files are now ready for further analysis :) You'll find them in: " + subsampled_fastq)
+            run_command(['mkdir ',subsampled_fastq,' ; filtlong --min_length 1000 --keep_percent 95 ',cat_fastq,'reads.fastq.gz| gzip > ',subsampled_fastq,'reads_subsampled.fastq.gz'], shell=True)
+        else:
+            run_command(['mkdir ',subsampled_fastq,' ; for f in $(ls ',fastq_folder,'*.fastq.gz | cut -d"." -f1) ; do base=$(basename ${f}) ;  filtlong --min_length 1000 --keep_percent 95 ${f}.fastq.gz| gzip > ',subsampled_fastq,'${base}_subsampled.fastq.gz ; done'], shell=True)
+        logging.info("The FASTQ files have been subsampled and are now ready for further analysis :) You'll find them in: " + subsampled_fastq)
     else:
-        logging.info("The FASTQ files are now ready for further analysis :) You'll find them in: " + cat_fastq)
+        logging.info("The FASTQ files (raw, not subsampled) are now ready for further analysis :) You'll find them in: " + fastq_folder)
 
-    ## Part 4: Count number of reads
-    logging.info("Counting number of reads in each raw FASTQ file and printing to: counts_raw_fastq_tmp.txt")
-    run_command(['fast_count > counts_raw_fastq_tmp.txt ; sed -i "s/seq_count/Number_of_reads/g" counts_raw_fastq_tmp.txt  ; sed -i "s/total_length/Number_of_bases_in_reads/g" counts_raw_fastq_tmp.txt  ;  ',cat_fastq,'*fastq.gz >> counts_raw_fastq_tmp.txt ; cat counts_raw_fastq_tmp.txt | rev | cut -d"/" -f-1 | rev >> counts_raw_fastq.txt ; rm counts_raw_fastq_tmp.txt' ], shell=True)
-    if args.filtlong:
-        logging.info("Counting number of reads in each subsampled FASTQ file and printing to: counts_subsampled_fastq.txt")
-        run_command(['fast_count > counts_subsampled_fastq_tmp.txt ;sed -i "s/seq_count/Number_of_reads/g" counts_subsampled_fastq_tmp.txt  ; sed -i "s/total_length/Number_of_bases_in_reads/g" counts_subsampled_fastq_tmp.txt   ; fast_count ',subsampled_fastq,'*fastq.gz  >> counts_subsampled_fastq_tmp.txt  ; cat counts_subsampled_fastq_tmp.txt | rev | cut -d"/" -f-1 | rev >> counts_subsampled_fastq.txt ; rm counts_subsampled_fastq_tmp.txt ' ], shell=True)
+    ## Part 5: Count number of reads if flag is turned on
+    if not args.fast_count == 'off' :
+        logging.info("Counting number of reads in each raw FASTQ file (003_fastq) and printing to: counts_raw_fastq_tmp.txt")
+        run_command(['fast_count > counts_raw_fastq_tmp.txt ; sed -i "s/seq_count/Number_of_reads/g" counts_raw_fastq_tmp.txt  ; sed -i "s/total_length/Number_of_bases_in_reads/g" counts_raw_fastq_tmp.txt  ;  ',fastq_folder,'*fastq.gz >> counts_raw_fastq_tmp.txt ; cat counts_raw_fastq_tmp.txt | rev | cut -d"/" -f-1 | rev >> counts_raw_fastq.txt ; rm counts_raw_fastq_tmp.txt' ], shell=True)
+    else:
+        logging.info("fast_count was not run. To turn on, specify args --fast_count on")
+
+    ## Part 6: It's a wrap
+    logging.info("ont-basecalling has finished.")
 
 
 if __name__ == '__main__':
@@ -253,4 +305,7 @@ if __name__ == '__main__':
 #EOF
 
 #TODO: Add option to specify path to filtlong, fastq_count and guppy-basecaller
-#TODO: Make in proper python code...
+#TODO: Add option to run only filtlong, only guppy or only fast_count (stepwise)
+#TODO: Add option to resume pipeline (not only guppy but the subsequent steps as well
+#TODO: Add checks for presence of folders/paths before creating new ones
+#TODO: Add try's for commands
