@@ -203,10 +203,9 @@ def main():
 
 
     raw_fast5s=os.path.abspath(str(args.input_dir))
-    basecalled_fastq=(outdir+'002_basecalled_demultiplexed/')
+    basecalled_fastq=(outdir+'002_basecalled/')
     cat_fastq=(outdir+'003_fastq/')
-    subsampled_fastq=(outdir+'004_subsampled_fastq/')
-    #ont_only_assemblies=(outdir+'005_ont_only_assemblies/')
+    subsampled_fastq=(outdir+'004_filtered/')
     barcode_kit=args.barcode_kit
     print("Specified barcode kit is: " + barcode_kit)
     basecaller_mode=args.basecalling_model
@@ -226,7 +225,7 @@ def main():
     if barcode_kit == 'none':
         run_command(['mkdir ',cat_fastq,' ; cat ',basecalled_fastq,'*fastq.gz >> ',cat_fastq,'reads.fastq.gz'], shell=True)
     else:
-        run_command(['mkdir ',cat_fastq,' ; for dir in $(ls -d ',basecalled_fastq,'pass/barcode[0-9][0-9] ',basecalled_fastq,'unclassified) ; do cd ${dir} ; base=$(basename $dir) ; cat *gz >> ',cat_fastq,'${base}.fastq.gz ; cd .. ; done' ], shell=True)
+        run_command(['mkdir ',cat_fastq,' ; for dir in $(ls -d ',basecalled_fastq,'pass/barcode[0-9][0-9] ',basecalled_fastq,'unclassified) ; do cd ${dir} ; base=$(basename $dir) ; cat *gz >> ',cat_fastq,'${base}_long.fastq.gz ; cd .. ; done' ], shell=True)
 
 
     ##Part 3: Run Filtlong
