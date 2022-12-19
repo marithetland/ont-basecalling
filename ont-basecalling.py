@@ -34,8 +34,9 @@ from subprocess import check_output, CalledProcessError, STDOUT
 
 #Options for basecalling and barcoding ## From Ryan
 BASECALLING = collections.OrderedDict([
-    ('r9.4_fast', ['--config dna_r9.4.1_450bps_fast.cfg ']),
-    ('r9.4_hac',  ['--config dna_r9.4.1_450bps_hac.cfg ']),
+    ('r9.4.1_fast', ['--config dna_r9.4.1_450bps_fast.cfg ']),
+    ('r9.4.1_hac',  ['--config dna_r9.4.1_450bps_hac.cfg ']),
+    ('r9.4.1_sup',  ['--config dna_r9.4.1_450bps_sup.cfg ']),
     ('r9.5',  ['--config dna_r9.5_450bps.cfg ']),
     ('r10_fast',  ['--config dna_r10_450bps_fast.cfg ']),
     ('r10_hac',   ['--config dna_r10_450bps_hac.cfg ']),
@@ -46,10 +47,9 @@ BARCODING = collections.OrderedDict([
     ('native_1-12',  ['--barcode_kits "EXP-NBD104" ']),
     ('native_13-24', ['--barcode_kits "EXP-NBD114" ']),
     ('native_1-24',  ['--barcode_kits "EXP-NBD104 EXP-NBD114" ']),
-    ('native_1-24_new',  ['--barcode_kits "SQK-NBD112-24" ']),
+    ('native_1-24_r10',  ['--barcode_kits "SQK-NBD112-24" ']),
     ('native_1-96',  ['--barcode_kits "EXP-NBD196" ']),
     ('rapid_1-12',   ['--barcode_kits "SQK-RBK004" ']),
-
     ('none',         ['--disable_trim_barcodes'])
 ])
 
