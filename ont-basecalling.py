@@ -292,7 +292,7 @@ def main():
     ## Part 5: Count number of reads if flag is turned on
     if not args.fast_count == 'off' :
         logging.info("Counting number of reads in each raw FASTQ file (003_fastq) and printing to: counts_raw_fastq_tmp.txt")
-        run_command(['fast_count > counts_raw_fastq_tmp.txt ; sed -i "s/seq_count/Number_of_reads/g" counts_raw_fastq_tmp.txt  ; sed -i "s/total_length/Number_of_bases_in_reads/g" counts_raw_fastq_tmp.txt  ; fast_count ',fastq_folder,'*fastq.gz >> counts_raw_fastq_tmp.txt ; cat counts_raw_fastq_tmp.txt | rev | cut -d"/" -f-1 | rev >> counts_raw_fastq.txt ; rm counts_raw_fastq_tmp.txt' ], shell=True)
+        run_command(['fast_count > counts_raw_fastq_tmp.txt ; sed -i "s/seq_count/Number_of_reads/g" counts_raw_fastq_tmp.txt  ; sed -i "s/total_length/Number_of_bases_in_reads/g" counts_raw_fastq_tmp.txt  ; fast_count ',fastq_folder,'*fastq.gz >> counts_raw_fastq_tmp.txt ; cat counts_raw_fastq_tmp.txt | rev | cut -d"/" -f-1 | rev >> readStats.txt ; rm counts_raw_fastq_tmp.txt' ], shell=True)
     else:
         logging.info("fast_count was not run. To turn on, specify args --fast_count on")
 
