@@ -306,6 +306,15 @@ if __name__ == '__main__':
 
 #TODO: Add option to specify path to filtlong, fastq_count and guppy-basecaller
 #TODO: Add option to run only filtlong, only guppy or only fast_count (stepwise)
-#TODO: Add option to resume pipeline (not only guppy but the subsequent steps as well
+#TODO: Add option to resume pipeline (not only guppy but the subsequent steps as well)
 #TODO: Add checks for presence of folders/paths before creating new ones
 #TODO: Add try's for commands
+
+#TODO: remove "_long" from 003_fastq outfile so it fits with clinopore-nf input 
+#TODO: change "_subsampled" to "_filtered" in 004_filtered to fit with trycycler output
+#TODO: fix barcode renaming/concatenation/filtering when no barcode "none" is specified. #cat 002_basecalled/pass/*gz >> 003_fastq/${sample}_long.fastq.gz
+#TODO: add option to run flye and medaka
+#TODO: add QC check (if flye and medaka is run): fast_count stats, num circular contigs, num total contigs, GC, total size, depth, (ST?)
+#TODO: add logfile to script ##python ont-basecalling.py --input_dir . --basecalling_model r9.4.1_sup --barcode_kit none --key_file barcode_sample_key.csv   >> ${run}.log 2>&1 ; touch ${run}.basecalled.txt ;
+#TODO: add a check that basecalling worked fine by looking for "Basecalling completed successfully." and that no "[guppy/warning]" exists.
+
