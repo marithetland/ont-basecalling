@@ -191,7 +191,7 @@ def rename_samples(fastq_folder, key_file):
 
     try:
         #Rename sequences according to barcode_sample_key.csv
-        run_command(['cat ',key_file,' | sed "s|^|rename \'s/|g" | sed \'s/,/\//\' | sed "s|$|/g\' *_long.fastq.gz|g" >> ',fastq_folder,'rename_samples.sh ; cd ',fastq_folder,' ; bash rename_samples.sh'], shell=True)
+        run_command(['cat ',key_file,' | sed "s|^|rename \'s/|g" | sed "s/,/\//g" | sed "s|$|/g\' *_long.fastq.gz|g" >> ',fastq_folder,'rename_samples.sh ; cd ',fastq_folder,' ; bash rename_samples.sh'], shell=True)
 
         #If any files were not renamed, move these to a new directory called: unused_barcodes
         unused_sequence = glob.glob(fastq_folder + "barcode[0-9][0-9]_long.fastq.gz")
