@@ -41,6 +41,8 @@ BASECALLING = collections.OrderedDict([
     ('r10_fast',  ['--config dna_r10_450bps_fast.cfg ']),
     ('r10_hac',   ['--config dna_r10_450bps_hac.cfg ']),
     ('r10.4_sup',   ['--config dna_r10.4_e8.1_sup.cfg ']),
+    ('r10.4.1_sup',   ['--config dna_r10.4.1_e8.2_400bps_sup.cfg ']),
+    ('r10.4.1_260bps_sup',   ['--config dna_r10.4.1_e8.2_260bps_sup.cfg ']),
 ])
 
 BARCODING = collections.OrderedDict([
@@ -48,6 +50,7 @@ BARCODING = collections.OrderedDict([
     ('native_13-24', ['--barcode_kits "EXP-NBD114" ']),
     ('native_1-24',  ['--barcode_kits "EXP-NBD104 EXP-NBD114" ']),
     ('native_1-24_r10',  ['--barcode_kits "SQK-NBD112-24" ']),
+    ('native_1-24_r1041',  ['--barcode_kits "SQK-NBD114-24" ']),
     ('native_1-96',  ['--barcode_kits "EXP-NBD196" ']),
     ('rapid_1-12',   ['--barcode_kits "SQK-RBK004" ']),
     ('none',         ['--disable_trim_barcodes'])
