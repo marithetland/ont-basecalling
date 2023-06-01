@@ -49,7 +49,7 @@ BARCODING = collections.OrderedDict([
     ('native_1-12',  ['--barcode_kits "EXP-NBD104" ']),
     ('native_13-24', ['--barcode_kits "EXP-NBD114" ']),
     ('native_1-24',  ['--barcode_kits "EXP-NBD104 EXP-NBD114" ']),
-    ('native_1-24_r10',  ['--barcode_kits "SQK-NBD112-24" ']),
+    ('native_1-24_r104',  ['--barcode_kits "SQK-NBD112-24" ']),
     ('native_1-24_r1041',  ['--barcode_kits "SQK-NBD114-24" ']),
     ('native_1-96',  ['--barcode_kits "EXP-NBD196" ']),
     ('rapid_1-12',   ['--barcode_kits "SQK-RBK004" ']),
@@ -70,8 +70,8 @@ def parse_args():
 
     #Input
     input_args.add_argument('-i', '--input_dir', type=pathlib.Path, required=True, help='Input directory, which will be recursively searched for fast5-files.')
-    input_args.add_argument('-b', '--basecalling_model', type=str, required=True, choices=["r9.4.1_fast","r9.4.1_hac","r9.4.1_sup","r9.5","r10_fast","r10_hac","r10.4_sup"], help='Indicate which basecalling mode to use. In most cases you probably want to use a HAC option.')
-    input_args.add_argument('-k', '--barcode_kit', type=str, required=True, choices=["none","native_1-12","native_13-24","native_1-24", "native_1-24_r10", "native_1-96", "rapid_1-12"], help='Indicate which barcode-kits were used, if any.')
+    input_args.add_argument('-b', '--basecalling_model', type=str, required=True, choices=["r9.4.1_fast","r9.4.1_hac","r9.4.1_sup","r9.5","r10_fast","r10_hac","r10.4_sup","r10.4.1_sup"], help='Indicate which basecalling mode to use. In most cases you probably want to use a HAC option.')
+    input_args.add_argument('-k', '--barcode_kit', type=str, required=True, choices=["none","native_1-12","native_13-24","native_1-24", "native_1-24_r104", "native_1-96", "rapid_1-12","native_1-24_r1041"], help='Indicate which barcode-kits were used, if any.')
 
     #Output - currently writes to same dir as input
     output_args.add_argument('-o', '--outdir', type=pathlib.Path, required=False, default='.', help='Output directory for all output files. Default is current working directory.')
