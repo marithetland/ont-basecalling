@@ -48,7 +48,7 @@ Input options (required):
   -i INPUT_DIR, --input_dir INPUT_DIR
                         Input directory, which will be recursively searched
                         for fast5-files.
-  -b {r9.4.1_fast,r9.4.1_hac,r9.4.1_sup,r9.5,r10_fast,r10_hac,r10.4_sup,r10.4.1_sup}, --basecalling_model {r9.4.1_fast,r9.4.1_hac,r9.4.1_sup,r9.5,r10_fast,r10_hac,r10.4_sup,r10.4.1_sup}
+  -b {r9.4.1_fast,r9.4.1_hac,r9.4.1_sup,r9.5,r10_fast,r10_hac,r10.4_sup,r10.4.1_sup,r10.4.1_260bps_sup}, --basecalling_model {r9.4.1_fast,r9.4.1_hac,r9.4.1_sup,r9.5,r10_fast,r10_hac,r10.4_sup,r10.4.1_sup,r10.4.1_260bps_sup}
                         Indicate which basecalling mode to use. In most cases
                         you probably want to use a HAC option.
   -k {none,native_1-12,native_13-24,native_1-24,native_1-24_r104,native_1-96,rapid_1-12,native_1-24_r1041}, --barcode_kit {none,native_1-12,native_13-24,native_1-24,native_1-24_r104,native_1-96,rapid_1-12,native_1-24_r1041}
